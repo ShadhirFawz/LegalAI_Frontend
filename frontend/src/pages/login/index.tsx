@@ -21,7 +21,7 @@ export default function LoginPage() {
     setIsSubmitting(false);
 
     if (!result.error) {
-      navigate("/", { replace: true });
+      navigate("/dashboard", { replace: true });
     } else {
       setError(result.error);
     }
