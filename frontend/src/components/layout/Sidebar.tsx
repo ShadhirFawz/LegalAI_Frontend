@@ -124,12 +124,13 @@ export function Sidebar({
     onCollapsedChange?.(!collapsed);
   };
 
-  const displayName =
-    (user?.user_metadata?.full_name as string | undefined) ||
-    user?.email ||
-    "User";
+  const fullName = (user?.user_metadata?.full_name as string | undefined)?.trim();
+  const email = user?.email ?? "";
+  const primaryLabel = fullName || email || "User";
+  /** Avoid repeating the same email on two lines when no display name is set */
+  const showEmailSubline = Boolean(email && primaryLabel !== email);
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
-  const initials = displayName
+  const initials = primaryLabel
     .split(" ")
     .filter(Boolean)
     .map((part) => part[0])
@@ -178,7 +179,7 @@ export function Sidebar({
               icon={LayoutDashboard}
               label="Dashboard"
               active={activeModule === "dashboard"}
-              onClick={() => onModuleChange("dashboard")}
+              onClick={() => navigate("/dashboard")}
               collapsed={collapsed}
             />
             <NavItem
@@ -376,11 +377,13 @@ export function Sidebar({
                       {!collapsed && (
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate transition-colors duration-200 group-hover:text-sidebar-primary">
-                            {displayName}
+                            {primaryLabel}
                           </p>
-                          <p className="text-xs text-sidebar-foreground/60 truncate">
-                            {user?.email}
-                          </p>
+                          {showEmailSubline && (
+                            <p className="text-xs text-sidebar-foreground/60 truncate">
+                              {email}
+                            </p>
+                          )}
                         </div>
                       )}
                     </div>
@@ -389,8 +392,10 @@ export function Sidebar({
                 <PopoverContent className="w-64" align="end" side="top">
                   <div className="space-y-3">
                     <div className="pb-2 border-b">
-                      <p className="text-sm font-semibold">{displayName}</p>
-                      <p className="text-xs text-muted-foreground">{user?.email}</p>
+                      <p className="text-sm font-semibold">{primaryLabel}</p>
+                      {showEmailSubline && (
+                        <p className="text-xs text-muted-foreground">{email}</p>
+                      )}
                     </div>
                     <div className="grid gap-2">
                       <Button

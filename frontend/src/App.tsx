@@ -17,6 +17,7 @@ import ClauseUploadPage from "./pages/clause/Upload";
 import ClauseWorkspacePage from "./pages/clause/Workspace";
 import ClauseSuggestionsPage from "./pages/clause/Suggestions";
 import CasesPage from "./pages/Cases";
+import DashboardPage from "./pages/Dashboard";
 import { ClauseProvider } from "./components/clause/ClauseContext";
 import { TranslationProvider } from "./components/translation/TranslationContext";
 import { TranslationFloatingWidget } from "./components/translation/TranslationFloatingWidget";
@@ -47,6 +48,14 @@ const App = () => (
                   element={
                     <ProtectedRoute>
                       <Index />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <DashboardPage />
                     </ProtectedRoute>
                   }
                 />
