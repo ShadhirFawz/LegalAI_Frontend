@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,8 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { listDatabaseDocuments, getDatabaseDocument } from "@/config/api";
-import { FileText, Download, Loader2, AlertCircle, ArrowLeft } from "lucide-react";
+import { FileText, Download, Loader2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
+import { caseFileDownloadPdfName, textContentToPdfBlob } from "@/lib/textToPdf";
+import { toast } from "sonner";
 
 interface CaseFile {
   file_id: string;
@@ -16,12 +20,57 @@ interface CaseFile {
   length?: number;
 }
 
+/** Display name without trailing `.clean.txt` from stored filenames */
+function displayCaseFilename(filename: string): string {
+  return filename.replace(/\.clean\.txt$/i, "");
+}
+
 export default function CasesPage() {
   const [caseFiles, setCaseFiles] = useState<CaseFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloading, setDownloading] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const navigate = useNavigate();
+  const { plan } = useAuth();
+
+  const lockedModules = useMemo(() => {
+    if (plan !== "free") return [];
+    return ["translation", "classification"];
+  }, [plan]);
+
+  const handleModuleChange = (module: string) => {
+    if (lockedModules.includes(module)) {
+      toast.message("Upgrade required", {
+        description: "This tool is available on paid plans.",
+      });
+      navigate("/membership");
+      return;
+    }
+    if (module === "dashboard") {
+      navigate("/dashboard");
+      return;
+    }
+    if (module === "clause") {
+      navigate("/clause");
+      return;
+    }
+    if (module === "cases") {
+      navigate("/cases");
+      return;
+    }
+    if (module === "translation" || module === "classification" || module === "legalLineage") {
+      navigate(`/?module=${module}`);
+      return;
+    }
+  };
+
+  const handleLockedModule = () => {
+    toast.message("Upgrade required", {
+      description: "Upgrade your plan to unlock this tool.",
+    });
+    navigate("/membership");
+  };
 
   useEffect(() => {
     const fetchCaseFiles = async () => {
@@ -44,20 +93,22 @@ export default function CasesPage() {
   const handleDownload = async (fileId: string, filename: string) => {
     try {
       setDownloading(fileId);
-      const blob = await getDatabaseDocument(fileId);
-      
-      // Create a download link
-      const url = window.URL.createObjectURL(blob);
+      const textBlob = await getDatabaseDocument(fileId);
+      const text = await textBlob.text();
+      const pdfBlob = textContentToPdfBlob(text);
+      const downloadName = caseFileDownloadPdfName(filename);
+
+      const url = window.URL.createObjectURL(pdfBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = filename;
+      link.download = downloadName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Error downloading document:", err);
-      alert("Failed to download document");
+      toast.error("Failed to download document");
     } finally {
       setDownloading(null);
     }
@@ -86,23 +137,24 @@ export default function CasesPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar activeModule="cases" onModuleChange={() => {}} />
+      <Sidebar
+        activeModule="cases"
+        onModuleChange={handleModuleChange}
+        lockedModules={lockedModules}
+        onLockedModule={handleLockedModule}
+        collapsed={sidebarCollapsed}
+        onCollapsedChange={setSidebarCollapsed}
+      />
 
-      <main className="ml-64 min-h-screen">
+      <main
+        className={cn(
+          "min-h-screen transition-all duration-300",
+          sidebarCollapsed ? "ml-20" : "ml-64",
+        )}
+      >
         <div className="p-8">
           {/* Header */}
           <div className="mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate("/")}
-                className="gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back to Home
-              </Button>
-            </div>
             <h1 className="font-heading text-3xl font-bold text-foreground">
               Case Files
             </h1>
@@ -154,7 +206,7 @@ export default function CasesPage() {
                         <FileText className="w-5 h-5 text-primary mt-1 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <CardTitle className="text-lg break-words">
-                            {file.filename}
+                            {displayCaseFilename(file.filename)}
                           </CardTitle>
                           <CardDescription className="mt-1">
                             {formatDate(file.upload_date)}

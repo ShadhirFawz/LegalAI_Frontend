@@ -3,7 +3,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { TranslationModule } from "@/components/translation/TranslationModule";
 import { ClassificationModule } from "@/components/classification/ClassificationModule";
 import { ClassificationProvider } from "@/components/classification/ClassificationContext";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import LegalLineageModule from "@/components/legalLineage/LegalLineageModule";
 import { cn } from "@/lib/utils";
@@ -45,6 +45,8 @@ export default function Index() {
   const [prices, setPrices] = useState<MembershipPrice[]>([]);
   const [billingOptions, setBillingOptions] = useState<BillingOption[]>([]);
   const navigate = useNavigate();
+  const location = useLocation();
+
   useEffect(() => {
     const loadMembership = async () => {
       const [tierRes, priceRes, billingRes] = await Promise.all([
@@ -107,6 +109,24 @@ export default function Index() {
   }, [plan]);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const m = params.get("module");
+    if (!m) return;
+    const allowed = ["translation", "classification", "legalLineage"] as const;
+    if (!allowed.includes(m as (typeof allowed)[number])) return;
+
+    if (lockedModules.includes(m)) {
+      setLockedModule(m);
+      setShowUpgrade(true);
+      navigate("/", { replace: true });
+      return;
+    }
+
+    setActiveModule(m);
+    navigate("/", { replace: true });
+  }, [location.search, lockedModules, navigate]);
+
+  useEffect(() => {
     if (lockedModules.includes(activeModule)) {
       setActiveModule("clause");
       navigate("/clause");
@@ -122,6 +142,7 @@ export default function Index() {
     setActiveModule(module);
     if (module === "clause") navigate("/clause");
     if (module === "cases") navigate("/cases");
+    if (module === "dashboard") navigate("/dashboard");
   };
 
   const handleLockedModule = (module: string) => {

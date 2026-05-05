@@ -43,6 +43,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -143,6 +144,7 @@ export function ClauseWorkspace({
   const hasChargedRef = useRef(false);
   const [showCompleteDialog, setShowCompleteDialog] = useState(false);
   const [isSavedToDb, setIsSavedToDb] = useState(false);
+  const [showSaveSuccessDialog, setShowSaveSuccessDialog] = useState(false);
 
   const defaultDocumentText = `IN THE SUPREME COURT OF THE DEMOCRATIC SOCIALIST REPUBLIC OF SRI LANKA
 
@@ -1993,7 +1995,7 @@ ${c.status === "accepted" ? `Corrected Text: ${c.userInputValue || c.predictedTe
   const handleSaveToDatabase = async () => {
     try {
       if (!savedTextFilename) {
-        alert("No file available to save. Please upload a document first.");
+        toast.error("No file available to save. Please upload a document first.");
         return;
       }
 
@@ -2021,15 +2023,14 @@ ${c.status === "accepted" ? `Corrected Text: ${c.userInputValue || c.predictedTe
       if (response.success) {
         setIsSavedToDb(true);
         console.log("Finalized document saved to database:", response);
-        alert("Successfully saved finalized document to database!");
-        // Optionally close dialog after a brief delay
-        setTimeout(() => setShowCompleteDialog(false), 1500);
+        setShowCompleteDialog(false);
+        setShowSaveSuccessDialog(true);
       } else {
         throw new Error("Failed to save to database");
       }
     } catch (error) {
       console.error("Error saving to database:", error);
-      alert(
+      toast.error(
         `Failed to save to database: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
@@ -2599,6 +2600,28 @@ ${c.status === "accepted" ? `Corrected Text: ${c.userInputValue || c.predictedTe
                 Back to Dashboard
               </Button>
             </div>
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showSaveSuccessDialog} onOpenChange={setShowSaveSuccessDialog}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                Saved successfully
+              </DialogTitle>
+              <DialogDescription>
+                Your case file has been saved to the database. You can access it anytime from the Cases page.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                onClick={() => setShowSaveSuccessDialog(false)}
+                className="w-full sm:w-auto"
+              >
+                OK
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
 
