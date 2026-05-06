@@ -290,7 +290,7 @@ export default function MembershipPage() {
                 onClick={() => canToggleBilling && setBilling("monthly")}
                 disabled={!canToggleBilling || !availableBillingCycles.includes("monthly")}
                 className={cn(
-                  "relative z-10 px-6 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                  "relative z-10 min-w-[110px] px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-2",
                   billing === "monthly"
                     ? "text-sidebar-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
@@ -304,16 +304,16 @@ export default function MembershipPage() {
                 onClick={() => canToggleBilling && setBilling("yearly")}
                 disabled={!canToggleBilling || !availableBillingCycles.includes("yearly")}
                 className={cn(
-                  "relative z-10 px-6 py-2 text-sm font-medium rounded-md transition-all duration-200",
+                  "relative z-10 min-w-[110px] px-6 py-2 text-sm font-medium rounded-md transition-all duration-200 flex items-center justify-center gap-2",
                   billing === "yearly"
                     ? "text-sidebar-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                   (!canToggleBilling || !availableBillingCycles.includes("yearly")) && "opacity-40 cursor-not-allowed"
                 )}
               >
-                Yearly
+                <span>Yearly</span>
                 {savings > 0 && billing === "yearly" && (
-                  <Badge variant="secondary" className="ml-2 bg-primary/10 text-primary text-[10px]">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary text-[10px]">
                     Save {savings}%
                   </Badge>
                 )}

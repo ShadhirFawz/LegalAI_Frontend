@@ -17,7 +17,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
-import { exportTranslation } from "@/config/api";
+import {
+  downloadTranslationPdf,
+  downloadTranslationTxt,
+  downloadTranslationJson,
+} from "@/lib/translationPdfService";
 import type { TranslationJobResult } from "@/config/api";
 
 interface TranslationSummaryProps {
@@ -69,15 +73,18 @@ export function TranslationSummary({
       return;
     }
     try {
-      const blob = await exportTranslation(jobId, format);
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${fileName.replace(/\.[^.]+$/, "")}_translated.${format}`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      if (!result) {
+        toast.error("Translation result is not available yet");
+        return;
+      }
+
+      if (format === "pdf") {
+        await downloadTranslationPdf(result, true);
+      } else if (format === "txt") {
+        downloadTranslationTxt(result, true);
+      } else {
+        downloadTranslationJson(result);
+      }
       toast.success(`Exported as ${format.toUpperCase()}`);
     } catch (err: any) {
       toast.error(err?.error || "Export failed");
