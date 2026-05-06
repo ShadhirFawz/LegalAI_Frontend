@@ -127,18 +127,17 @@ export default function Index() {
   }, [location.search, lockedModules, navigate]);
 
   useEffect(() => {
+    if (plan !== "free") {
+      if (showUpgrade) setShowUpgrade(false);
+      if (lockedModule) setLockedModule(null);
+      return;
+    }
+
     if (lockedModules.includes(activeModule)) {
       setLockedModule(activeModule);
       setShowUpgrade(true);
     }
-  }, [activeModule, lockedModules]);
-
-  useEffect(() => {
-    if (lockedModules.length === 0 && showUpgrade) {
-      setShowUpgrade(false);
-      setLockedModule(null);
-    }
-  }, [lockedModules, showUpgrade]);
+  }, [activeModule, lockedModule, lockedModules, plan, showUpgrade]);
 
   const handleModuleChange = (module: string) => {
     if (lockedModules.includes(module)) {
