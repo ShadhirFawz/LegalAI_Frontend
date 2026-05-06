@@ -101,7 +101,7 @@ export default function Index() {
   };
 
   const priceLabel = (value: number, cycle: "monthly" | "yearly") =>
-    `$${value}/${cycle === "monthly" ? "month" : "year"}`;
+    `LKR ${value}/${cycle === "monthly" ? "month" : "year"}`;
 
   const lockedModules = useMemo(() => {
     if (plan !== "free") return [];

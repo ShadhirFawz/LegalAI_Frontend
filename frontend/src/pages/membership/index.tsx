@@ -196,7 +196,7 @@ export default function MembershipPage() {
   }, [availableBillingCycles, billing]);
 
   const priceLabel = (value: number, cycle: "monthly" | "yearly") =>
-    `$${value}/${cycle === "monthly" ? "month" : "year"}`;
+    `LKR ${value}/${cycle === "monthly" ? "month" : "year"}`;
 
   const getEffectiveBilling = (tierCode: string) => {
     if (isBillingEnabled(tierCode, billing)) return billing;
@@ -347,7 +347,7 @@ export default function MembershipPage() {
                     </div>
                     <CardTitle className="text-xl">Free</CardTitle>
                     <div className="mt-1">
-                    <div className="text-2xl font-semibold">$0</div>
+                    <div className="text-2xl font-semibold">LKR 0</div>
                     <p className="text-xs text-muted-foreground mt-0.5">Forever free</p>
                     </div>
                 </CardHeader>
@@ -405,7 +405,7 @@ export default function MembershipPage() {
                         {proBilling === "yearly" ? (
                           isBillingEnabled("pro", "monthly") ? (
                             <span className="text-green-600 dark:text-green-400 text-[11px]">
-                              Save ${
+                              Save LKR ${
                                 (priceLookup.get("pro:monthly")?.price_usd ?? 0) * 12 -
                                 (priceLookup.get("pro:yearly")?.price_usd ?? 0)
                               }/yr
@@ -483,7 +483,7 @@ export default function MembershipPage() {
                         {premiumBilling === "yearly" ? (
                           isBillingEnabled("premium", "monthly") ? (
                             <span className="text-green-600 dark:text-green-400 text-[11px]">
-                              Save ${
+                              Save LKR ${
                                 (priceLookup.get("premium:monthly")?.price_usd ?? 0) * 12 -
                                 (priceLookup.get("premium:yearly")?.price_usd ?? 0)
                               }/yr
@@ -573,7 +573,7 @@ export default function MembershipPage() {
                               {tierBilling === "yearly" ? (
                                 isBillingEnabled(tier.code, "monthly") ? (
                                   <span className="text-green-600 dark:text-green-400 text-[11px]">
-                                    Save ${(priceLookup.get(`${tier.code}:monthly`)?.price_usd ?? 0) * 12 -
+                                    Save LKR ${(priceLookup.get(`${tier.code}:monthly`)?.price_usd ?? 0) * 12 -
                                       (priceLookup.get(`${tier.code}:yearly`)?.price_usd ?? 0)}/yr
                                   </span>
                                 ) : (

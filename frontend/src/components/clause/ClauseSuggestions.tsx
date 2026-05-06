@@ -362,7 +362,7 @@ ${c.status === 'accepted' ? `Corrected Text: ${c.userInputValue || c.predictedTe
   const getInputConfig = (inputType?: string) => {
     switch (inputType) {
       case 'date': return { placeholder: 'YYYY-MM-DD', type: 'date' };
-      case 'currency': return { placeholder: '$0.00', type: 'text' };
+      case 'currency': return { placeholder: 'LKR 0.00', type: 'text' };
       case 'number': return { placeholder: 'Enter number', type: 'number' };
       case 'signature': return { placeholder: 'Type signature or leave blank', type: 'text' };
       default: return { placeholder: 'Enter value', type: 'text' };

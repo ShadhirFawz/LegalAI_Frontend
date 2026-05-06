@@ -362,7 +362,7 @@ export function PackageEditorModal({ open, onOpenChange }: PackageEditorModalPro
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label>Monthly price ($)</Label>
+                      <Label>Monthly price (LKR)</Label>
                       <Input
                         type="number"
                         value={tier.price_monthly}
@@ -373,7 +373,7 @@ export function PackageEditorModal({ open, onOpenChange }: PackageEditorModalPro
                       />
                     </div>
                     <div className="space-y-1">
-                      <Label>Yearly price ($)</Label>
+                      <Label>Yearly price (LKR)</Label>
                       <Input
                         type="number"
                         value={tier.price_yearly}
@@ -456,7 +456,7 @@ export function PackageEditorModal({ open, onOpenChange }: PackageEditorModalPro
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>Monthly price ($)</Label>
+                  <Label>Monthly price (LKR)</Label>
                   <Input
                     type="number"
                     value={newTier.price_monthly}
@@ -470,7 +470,7 @@ export function PackageEditorModal({ open, onOpenChange }: PackageEditorModalPro
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>Yearly price ($)</Label>
+                  <Label>Yearly price (LKR)</Label>
                   <Input
                     type="number"
                     value={newTier.price_yearly}
