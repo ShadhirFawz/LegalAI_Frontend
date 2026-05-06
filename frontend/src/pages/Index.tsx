@@ -133,6 +133,13 @@ export default function Index() {
     }
   }, [activeModule, lockedModules]);
 
+  useEffect(() => {
+    if (lockedModules.length === 0 && showUpgrade) {
+      setShowUpgrade(false);
+      setLockedModule(null);
+    }
+  }, [lockedModules, showUpgrade]);
+
   const handleModuleChange = (module: string) => {
     if (lockedModules.includes(module)) {
       setLockedModule(module);
