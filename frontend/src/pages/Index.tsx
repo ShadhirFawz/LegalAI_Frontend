@@ -128,10 +128,10 @@ export default function Index() {
 
   useEffect(() => {
     if (lockedModules.includes(activeModule)) {
-      setActiveModule("clause");
-      navigate("/clause");
+      setLockedModule(activeModule);
+      setShowUpgrade(true);
     }
-  }, [activeModule, lockedModules, navigate]);
+  }, [activeModule, lockedModules]);
 
   const handleModuleChange = (module: string) => {
     if (lockedModules.includes(module)) {
